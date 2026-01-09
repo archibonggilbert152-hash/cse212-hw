@@ -1,33 +1,81 @@
-public static class Arrays
-{
-    /// <summary>
-    /// This function will produce an array of size 'length' starting with 'number' followed by multiples of 'number'.  For 
-    /// example, MultiplesOf(7, 5) will result in: {7, 14, 21, 28, 35}.  Assume that length is a positive
-    /// integer greater than 0.
-    /// </summary>
-    /// <returns>array of doubles that are the multiples of the supplied number</returns>
-    public static double[] MultiplesOf(double number, int length)
-    {
-        // TODO Problem 1 Start
-        // Remember: Using comments in your program, write down your process for solving this problem
-        // step by step before you write the code. The plan should be clear enough that it could
-        // be implemented by another person.
+using System;
+using System.Collections.Generic;
 
-        return []; // replace this return statement with your own
+class Arrays
+{
+    static void Main(string[] args)
+    {
+        // ===== PART 1 TEST =====
+        double[] multiples = MultiplesOf(3, 5);
+        Console.WriteLine("MultiplesOf(3, 5):");
+        Console.WriteLine(string.Join(", ", multiples));
+
+        // ===== PART 2 TEST =====
+        List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        RotateListRight(numbers, 3);
+
+        Console.WriteLine("\nRotated List by 3:");
+        Console.WriteLine(string.Join(", ", numbers));
     }
 
-    /// <summary>
-    /// Rotate the 'data' to the right by the 'amount'.  For example, if the data is 
-    /// List<int>{1, 2, 3, 4, 5, 6, 7, 8, 9} and an amount is 3 then the list after the function runs should be 
-    /// List<int>{7, 8, 9, 1, 2, 3, 4, 5, 6}.  The value of amount will be in the range of 1 to data.Count, inclusive.
-    ///
-    /// Because a list is dynamic, this function will modify the existing data list rather than returning a new list.
-    /// </summary>
-    public static void RotateListRight(List<int> data, int amount)
+    // ==========================================================
+    // PART 1: ARRAYS
+    // ==========================================================
+    static double[] MultiplesOf(double start, int count)
     {
-        // TODO Problem 2 Start
-        // Remember: Using comments in your program, write down your process for solving this problem
-        // step by step before you write the code. The plan should be clear enough that it could
-        // be implemented by another person.
+        /*
+         * PLAN:
+         * 1. Create a new array with size equal to 'count'
+         * 2. Use a loop that runs 'count' times
+         * 3. For each index i:
+         *      - Multiply the starting number by (i + 1)
+         *      - Store the result in the array at index i
+         * 4. Return the filled array
+         */
+
+        double[] result = new double[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            result[i] = start * (i + 1);
+        }
+
+        return result;
+    }
+
+    // ==========================================================
+    // PART 2: LISTS
+    // ==========================================================
+    static void RotateListRight(List<int> data, int amount)
+    {
+        /*
+         * PLAN:
+         * 1. Create a new temporary list to store rotated values
+         * 2. Find the starting index:
+         *      - data.Count - amount
+         * 3. Add elements from that index to the end of the list
+         * 4. Add the remaining elements from the beginning
+         * 5. Clear the original list
+         * 6. Copy the rotated data back into the original list
+         */
+
+        List<int> rotated = new List<int>();
+        int startIndex = data.Count - amount;
+
+        // Add the last 'amount' elements
+        for (int i = startIndex; i < data.Count; i++)
+        {
+            rotated.Add(data[i]);
+        }
+
+        // Add the remaining elements from the beginning
+        for (int i = 0; i < startIndex; i++)
+        {
+            rotated.Add(data[i]);
+        }
+
+        // Replace original list contents
+        data.Clear();
+        data.AddRange(rotated);
     }
 }
