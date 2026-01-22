@@ -12,8 +12,8 @@ using System.Collections.Generic;
 
 public class TakingTurnsQueue
 {
-  internal int Length;
-  private Queue<Person> _queue = new Queue<Person>();
+    internal int Length;
+    private Queue<Person> _queue = new Queue<Person>();
 
     public void AddPerson(string name, int turns)
     {
