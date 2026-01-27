@@ -1,20 +1,29 @@
-public class SetsAndMaps
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+
+public static class SetsAndMaps
 {
-    public static List<string> FindPairs(List<string> words)
+    // --------------------------------------------------
+    // PROBLEM 1: Find Pairs
+    // --------------------------------------------------
+    public static List<string> FindPairs(string[] words)
     {
         HashSet<string> seen = new HashSet<string>();
         List<string> result = new List<string>();
 
         foreach (string word in words)
         {
-            char first = word[0];
-            char second = word[1];
+            char a = word[0];
+            char b = word[1];
 
-            // Skip words like "aa"
-            if (first == second)
+            // special case: aa, bb, etc.
+            if (a == b)
                 continue;
 
-            string reversed = $"{second}{first}";
+            string reversed = $"{b}{a}";
 
             if (seen.Contains(reversed))
             {
@@ -29,61 +38,103 @@ public class SetsAndMaps
         return result;
     }
 
+    // --------------------------------------------------
+    // PROBLEM 2: Degree Summary
+    // --------------------------------------------------
     public static Dictionary<string, int> SummarizeDegrees(string filename)
-{
-    Dictionary<string, int> degrees = new Dictionary<string, int>();
-
-    foreach (string line in File.ReadAllLines(filename))
     {
-        string[] columns = line.Split(',');
+        Dictionary<string, int> summary = new Dictionary<string, int>();
 
-        if (columns.Length < 4)
-            continue;
-
-        string degree = columns[3].Trim();
-
-        if (degrees.ContainsKey(degree))
+        foreach (string line in File.ReadAllLines(filename))
         {
-            degrees[degree]++;
+            string[] parts = line.Split(',');
+
+            if (parts.Length < 4)
+                continue;
+
+            string degree = parts[3].Trim();
+
+            if (summary.ContainsKey(degree))
+                summary[degree]++;
+            else
+                summary[degree] = 1;
         }
-        else
-        {
-            degrees[degree] = 1;
-        }
+
+        return summary;
     }
 
-    return degrees;
-}
-public static bool IsAnagram(string word1, string word2)
-{
-    word1 = word1.Replace(" ", "").ToLower();
-    word2 = word2.Replace(" ", "").ToLower();
-
-    if (word1.Length != word2.Length)
-        return false;
-
-    Dictionary<char, int> letters = new Dictionary<char, int>();
-
-    foreach (char c in word1)
+    // --------------------------------------------------
+    // PROBLEM 3: Anagrams
+    // --------------------------------------------------
+    public static bool IsAnagram(string word1, string word2)
     {
-        if (letters.ContainsKey(c))
-            letters[c]++;
-        else
-            letters[c] = 1;
-    }
+        word1 = word1.Replace(" ", "").ToLower();
+        word2 = word2.Replace(" ", "").ToLower();
 
-    foreach (char c in word2)
-    {
-        if (!letters.ContainsKey(c))
+        if (word1.Length != word2.Length)
             return false;
 
-        letters[c]--;
+        Dictionary<char, int> counts = new Dictionary<char, int>();
 
-        if (letters[c] < 0)
-            return false;
+        foreach (char c in word1)
+        {
+            if (counts.ContainsKey(c))
+                counts[c]++;
+            else
+                counts[c] = 1;
+        }
+
+        foreach (char c in word2)
+        {
+            if (!counts.ContainsKey(c))
+                return false;
+
+            counts[c]--;
+
+            if (counts[c] < 0)
+                return false;
+        }
+
+        return true;
     }
 
-    return true;
+    // --------------------------------------------------
+    // PROBLEM 5: Earthquakes
+    // --------------------------------------------------
+    public static string[] EarthquakeDailySummary(string json)
+    {
+        FeatureCollection data =
+            JsonSerializer.Deserialize<FeatureCollection>(
+                json,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+
+        List<string> results = new List<string>();
+
+        foreach (Feature feature in data.Features)
+        {
+            string place = feature.Properties.Place;
+            double? mag = feature.Properties.Mag;
+
+            results.Add($"{place} - Mag {mag}");
+        }
+
+        return results.ToArray();
     }
 }
 
+public class FeatureCollection
+{
+    public List<Feature> Features { get; set; }
+}
+
+public class Feature
+{
+    public Properties Properties { get; set; }
+}
+
+public class Properties
+{
+    public string Place { get; set; }
+    public double? Mag { get; set; }
+}
